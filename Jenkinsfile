@@ -51,8 +51,6 @@ pipeline {
       }
       steps {
         dir('/home/jenkins/go/src/github.com/cb-kubecd/mike-go1/charts/mike-go1') {
-          sh "echo sleeping...."
-          sh "sleep 10000"
           sh "jx step changelog --version v\$(cat ../../VERSION)"
 
           // release the helm chart
