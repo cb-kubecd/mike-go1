@@ -2,7 +2,7 @@ pipeline {
   agent any
   environment {
     ORG = 'cb-kubecd'
-    APP_NAME = 'mike-go1'
+    APP_NAME = 'mike-go2'
     CHARTMUSEUM_CREDS = credentials('jenkins-x-chartmuseum')
   }
   stages {
@@ -16,13 +16,13 @@ pipeline {
         HELM_RELEASE = "$PREVIEW_NAMESPACE".toLowerCase()
       }
       steps {
-        dir('/home/jenkins/go/src/github.com/cb-kubecd/mike-go1') {
+        dir('/home/jenkins/go/src/github.com/cb-kubecd/mike-go2') {
           checkout scm
           sh "make linux"
           sh "export VERSION=$PREVIEW_VERSION && skaffold build -f skaffold.yaml"
           sh "jx step post build --image $DOCKER_REGISTRY/$ORG/$APP_NAME:$PREVIEW_VERSION"
         }
-        dir('/home/jenkins/go/src/github.com/cb-kubecd/mike-go1/charts/preview') {
+        dir('/home/jenkins/go/src/github.com/cb-kubecd/mike-go2/charts/preview') {
           sh "make preview"
           sh "jx preview --app $APP_NAME --dir ../.."
         }
@@ -33,8 +33,8 @@ pipeline {
         branch 'master'
       }
       steps {
-        dir('/home/jenkins/go/src/github.com/cb-kubecd/mike-go1') {
-          git 'https://github.com/cb-kubecd/mike-go1.git'
+        dir('/home/jenkins/go/src/github.com/cb-kubecd/mike-go2') {
+          git 'https://github.com/cb-kubecd/mike-go2.git'
 
           // so we can retrieve the version in later steps
           sh "echo \$(jx-release-version) > VERSION"
@@ -50,7 +50,7 @@ pipeline {
         branch 'master'
       }
       steps {
-        dir('/home/jenkins/go/src/github.com/cb-kubecd/mike-go1/charts/mike-go1') {
+        dir('/home/jenkins/go/src/github.com/cb-kubecd/mike-go2/charts/mike-go2') {
           sh "jx step changelog --version v\$(cat ../../VERSION)"
 
           // release the helm chart
